@@ -2,10 +2,11 @@
 title: "Overview"
 nav_order: 2
 ---
+
 ### Context
 
-Asset links are device class drivers used to interact with OT Assets using different protocols supported by the assets. They act as protocol adapters that enable standardized communication between the [Asset Gateway](https://github.com/industrial-asset-hub/asset-gateway) and diverse OT equipment, regardless of the underlying communication protocol (e.g., OPC UA, Modbus, PROFINET, or proprietary protocols). 
-Each asset link is deployed as a gRPC server that registers with the gateway, exposing capabilities such as asset discovery and asset management operations. This modular architecture allows Device Builders to extend gateway functionality by creating custom asset links tailored to specific asset types or protocols without modifying the core gateway implementation.
+Asset Links are device class drivers used to interact with OT Assets using different protocols supported by the assets. They act as protocol adapters that enable standardized communication between the [Asset Gateway](https://github.com/industrial-asset-hub/asset-gateway) and diverse OT(Operational Technology) equipment, regardless of the underlying communication protocol (e.g., OPC UA, Modbus, PROFINET, or proprietary protocols). 
+Each Asset Link is deployed as a gRPC server that registers with the gateway, exposing capabilities such as asset discovery and asset management operations. This modular architecture allows Device Builders to extend gateway functionality by creating custom Asset Links tailored to specific asset types or protocols without modifying the core gateway implementation.
 
 ![](images/context-diagram.drawio.png)
 
