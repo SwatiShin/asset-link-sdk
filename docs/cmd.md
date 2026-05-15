@@ -17,9 +17,9 @@ Build it locally or install it by running:
 
 ```bash
 # build
-go build ./cmd/al-ctl/al-ctl.go
+go build cmd/al-ctl/al-ctl.go
 # install
-go install github.com/industrial-asset-hub/asset-link-sdk/v3/cmd/al-ctl@main
+go install github.com/industrial-asset-hub/asset-link-sdk/v4/cmd/al-ctl@main
 ```
 
 By running the `al-ctl` with the `--help` argument will give you a description of the available commands and the options.
@@ -48,8 +48,24 @@ Examples of these commands are described below:
 # To run discovery on the Asset Link
 $ al-ctl assets discover -e localhost:8081 [-d <discovery-config>] [-o <output-file>]
 
-# Example: al-ctl assets discover -e localhost:8081 
+# Example: al-ctl assets discover -e localhost:8081 -d misc/discovery.json
 ```
+### Defining Filters and Options in Discovery Configuration:
+
+- The `<discovery-config>` file follows the structure shown below:
+  ```
+  {
+      "filters": [],
+      "options": []
+  }
+  ```
+- An example of such a discovery configuration is the [Example discovery-config](misc/discovery.json) file used by the reference asset link.
+   - Note: The example provided may not be valid for all asset‑links. Supported filters and options vary depending on the capabilities of each asset‑link.
+- To identify the filters and options supported by a specific asset‑link, use the following command:
+  ```bash
+  $ al-ctl info -e localhost:8081
+  ```
+- After determining the supported filters and options for the target asset‑link, populate the filters and options sections accordingly.
 
 ```bash
 # To convert discovered asset payload to actual assets
@@ -62,7 +78,7 @@ $ al-ctl assets convert -e localhost:8081 -i <input-file> -o <output-file>
 # To run get identifiers on the Asset Link
 $ al-ctl assets identifier -e localhost:8081 -p <identifiers-request-file-path> -o <output-file>
 
-# Example: al-ctl assets identifier -e localhost:8081 -p ./identifier_request.json -o test-asset.json
+# Example: al-ctl assets identifier -e localhost:8081 -p misc/identifier_request.json -o test-asset.json
 ```
 
 ## Command: 'test'
@@ -82,19 +98,20 @@ Examples of these commands are described below:
 $ al-ctl test api -e localhost:8081 --service-name discovery [-d <discovery-config>]
 # The Asset Link must be running on the provided address, for example here: localhost:8081
 ```
+For more information about `<discovery-config>`, see the [Defining Filters and Options in Discovery Configuration](#defining-filters-and-options-in-discovery-configuration) section.
 
 ```bash
 # To also validate the discovered assets against the schema use -v flag
 $ al-ctl test api -l -e localhost:8081 --service-name discovery -v --base-schema-path <base-schema> --target-class Asset
 # The Asset Link must be running on the provided address, for example here: localhost:8081
 
-# Example: al-ctl test api -l -e localhost:8081 --service-name discovery -v --base-schema-path ./iah_base-v0.12.0.yaml --target-class Asset
+# Example: al-ctl test api -l -e localhost:8081 --service-name discovery -v --base-schema-path model/iah_base_v1.9.0.yaml --target-class Asset
 ```
 
 ```bash
 # To also validate the cancellation of the discovery use -c flag
 $ al-ctl test api -e localhost:8081 --service-name discovery [-d <discovery-config>] -c -n <timeout>
-# Timeout is the delay until the discovery is cancelled automatically
+# Timeout is the delay until the discovery is cancelled automatically. Timeout value can be given as a float value.
 ```
 
 ```bash
@@ -102,7 +119,7 @@ $ al-ctl test api -e localhost:8081 --service-name discovery [-d <discovery-conf
 $ al-ctl test api -e localhost:8081 --service-name identifiers -p <identifiers-request-file-path>
 # The Asset Link must be running on the provided address, for example here: localhost:8081 and the Asset Link must implement Get Identifiers API. Also provide the identifier request file path, default is empty.
 
-# Example: al-ctl test api -e localhost:8081 --service-name identifiers -p ./identifier_request.json
+# Example: al-ctl test api -e localhost:8081 --service-name identifiers -p misc/identifier_request.json
 ```
 
 ```bash
@@ -112,7 +129,7 @@ $ al-ctl test api -e localhost:8081 --service-name identifiers -p <identifiers-r
 
 # SPECIAL NOTE: Depending on the asset link implementation of Get Identifiers, the asset returned may be incomplete. Hence, the validation may fail.
 
-# Example: al-ctl test api -e localhost:8081 --service-name identifiers -p ./identifier_request.json -v --base-schema-path ./iah_base-v0.12.0.yaml --target-class Asset
+# Example: al-ctl test api -e localhost:8081 --service-name identifiers -p misc/identifier_request.json -v --base-schema-path model/iah_base_v1.9.0.yaml --target-class Asset
 ```
 
 ```bash
@@ -120,7 +137,7 @@ $ al-ctl test api -e localhost:8081 --service-name identifiers -p <identifiers-r
 $ al-ctl test assets --base-schema-path <base-schema> --asset-path <asset>
 --target-class <target-class>
 
-# Example: al-ctl test assets --base-schema-path ./iah_base-v0.12.0.yaml --asset-path ./Asset-001.ld.json --target-class Asset
+# Example: al-ctl test assets --base-schema-path model/iah_base_v1.9.0.yaml --asset-path Asset-001.ld.json --target-class Asset
 ```
 
 ```bash
@@ -128,14 +145,16 @@ $ al-ctl test assets --base-schema-path <base-schema> --asset-path <asset>
 $ al-ctl test assets --base-schema-path <base-schema> --asset-path <asset>
 --schema-path <extended-schema> --target-class <target-class>
 
-# Example: al-ctl test assets --base-schema-path ./iah_base-v0.12.0.yaml --asset-path ./SatController-001.json --schema-path ./cdm_sat.yaml --target-class SatController
+# Example: al-ctl test assets --base-schema-path model/iah_base_v1.9.0.yaml --asset-path SatController-001.json --schema-path cdm_sat.yaml --target-class SatController
 ```
 
 Note: LinkML is used to validate assets against the schema.
 
 - If LinkML is already installed and available in the testing environment, use the `-l` flag for validation.
-- Otherwise, the validation will be performed using Docker to run the linkml-validator.
-- The iah_base_v0.12.0.yaml is used as the base schema for validation, which can be found in the [model](https://github.com/industrial-asset-hub/asset-link-sdk/tree/main/model) directory
+- Otherwise, the validation will be performed using Docker to run the `linkml-validator`.
+- The `iah_base_v1.9.0.yaml` file is used as the base schema for validation, which can be found in the [model](https://github.com/industrial-asset-hub/asset-link-sdk/tree/main/model) directory.
+- For backward compatibility, use older versions of the base schema when the Asset Link is implemented against an earlier base schema version; this also applies to extended-schema use cases for base schema versions up to v0.12.0.
+
 
 ```bash
 # To validate the registration of asset-link created via asset-link-SDK
@@ -143,5 +162,5 @@ Note: LinkML is used to validate assets against the schema.
 # asset-link-endpoint is a required field in order to run this test
 $ al-ctl test registration -e <asset-link-endpoint> -r <grpc-endpoint> -f <registry-file-path>
 
-#Example: al-ctl test registration -r grpc-server-registry:50051 -f ./registry.json
+#Example: al-ctl test registration -r grpc-server-registry:50051 -f misc/registry.json
 ```
