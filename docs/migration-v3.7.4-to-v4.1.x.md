@@ -1,6 +1,6 @@
 ---
 title: "Migration Guide: v3.7.4 to v4.1.x"
-nav_order: 9
+nav_order: 7
 ---
 
 # Migration Guide: v3.7.4 → v4.1.x
